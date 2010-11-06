@@ -1019,6 +1019,251 @@ lesson_set "Hackety Hack" do
   end
 
 
+  lesson "ROT13 method"
+
+  page "Getting Serious" do
+    para "This chapter is a little harder than those you have encountered ",
+      "thus far. If there are things you do not understand, do not worry ",
+      "too much."
+
+    para "You can already write a lot of programs with what you have ",
+      "learned so far. You might want to come back to this chapter later, ",
+      "once you have done a bit more practice by playing around writing your ",
+      "own programs."
+
+    para "Do not hesitate to ask questions on the forum or the mailing list ",
+      "if there is anything that isn't clear!"
+  end
+
+  page "In Need of a Method" do
+    para "Let's look back at the program we wrote in chapter 3."
+
+    para "I cheated a little by giving you the ", code("rot13"),
+      " method attached to ",
+      "Strings, but suppose Hackety Hack didn't do that. This chapter is ",
+      "about creating your own ", code("rot13"), " method."
+
+    para "Here is the program we wrote, with the ", code("rot13"),
+      " line removed: we will ",
+      "now need to make that line work again. Without using the ", 
+      code("rot13"), " method."
+
+    embed_code "# Encrypting messages\n" +
+      "window do\n" +
+      "  stack do\n" +
+      '    title "Cypher"' + "\n" +
+      '    box = edit_box "put your text here"' + "\n" +
+      '    button "Encrypt/Decript" do' + "\n" +
+      '      edit_box.text = edit_box.text' + "\n" +
+      "    end\n" +
+      "  end\n" +
+      "end"
+  end
+
+  page "More on rot 13" do
+    para "First, you should make sure you exactly understood what ROT 13 ",
+      "does. As said earlier each letter gets replaced by the letter 13 ",
+      "positions beyond it in the alphabet. Every ", strong("A"), " becomes ",
+      "an ", strong("N"), ", every ", strong("B"), " becomes an ",
+      strong("O"), ", and so on:"
+    image "#{HH::STATIC}/lessons/rot13.png", :margin => 6
+    
+    para "as you can see the second half is exactly the first half reversed. ",
+      "This means the first half is enough both to encrypt our message, and ",
+      "to get our original message back."
+    image "#{HH::STATIC}/lessons/rot13_bidi.png", :margin => 6
+    para "To make sure you understand it try decrypting ",
+      code("\"lbh tbg vg\""), " by hand."
+  end
+
+  page "Next Thing" do
+    flow do
+      para "Ruby provides the string method ", code("next"), " this method ",
+        "will be useful in this lesson. Let's have a look at how it works. ",
+        "Go to the ruby console (just click on the "
+      image "#{HH::STATIC}/tab-try.png", :margin => 6
+      para "tab) and try typing "
+      embed_code '"a".next'
+    end
+    next_when :try_ruby_command,
+        :code => /next/, :answer => /[a-zA-Z]/
+  end
+
+  page "One Letter at a Time" do
+    para "By calling next 13 times we can encode a single letter, write the ",
+      "following in the Try Ruby box:"
+    embed_code 'letter = "a"' + "\n" +
+      "13.times do\n" +
+      "  letter = letter.next\n" +
+      '  puts "now letter contains #{letter}"' + "\n" +
+      "end\n" +
+      "letter"
+    #next_when :try_ruby_command, :code => /next/, :answer => 13
+
+    para "Unfortunately this will not always work. You can start thinking ",
+      "about what could be going wrong (hint: try ", code('"z".next'), ")."
+    next_when :try_ruby_command, :code => /next/, :answer => /^aa$/i
+  end
+
+  page "Brackets Will Find You" do
+    para "We will fix that later, now we need one more method to manipulate ",
+      "strings, run the following:"
+    embed_code '"hello"[0]'
+
+    para "The ", code("[]"), " method allows you to read and write to only a ",
+      "piece of the string, if we put a number in it we take the character at ",
+      "the given position."
+    para "Note that computers like to start counting from 0. They are a ",
+      "little weird like that."
+    para "Arrays have a totally similar method:"
+    embed_code '["first", "second", 3, "fourth"][1]'
+    para "Those brackets can also be used to ", strong("change"),
+      " the string, and that is exactly what we will be doing, try"
+
+    embed_code 'word = "hello"' + "\n" +
+        'word[0] = "H"' + "\n" +
+        'word'
+    next_when :try_ruby_command, :code => /^\w+$/, :answer => String
+  end
+
+  page "Encryption Method " do
+    para "Let's now get back to our program and change in the following way:"
+
+    embed_code "def my_rot13(txt)\n" +
+      "  # this is just a placeholder\n" +
+      '  "encryption of #{txt}"' + "\n" +
+      "end\n" +
+      "\n" +
+      "window do\n" +
+      "  stack do\n" +
+      '    title "Rot 13 Encryption"' + "\n" +
+      '    box = edit_box "put your text here"' + "\n" +
+      '    button "Encode/Decode" do' + "\n" +
+      "      box.text = my_rot13(box.text)\n" +
+      "    end\n" +
+      "  end\n" +
+      "end"
+
+    para "A new method named ", code("my_rot13"), " has been created. ",
+      "This method will need to take each letters of the string ", code("txt"),
+      " and replace it with the one 13 places next in the alphabet."
+  end
+
+  page "We Like Methods" do
+    para "Let's add another method that encodes just one letter. Having small ",
+      "methods that do just one thing often helps making the code easier to ",
+      "understand and maintain."
+
+    embed_code "def my_rot13(txt)\n" +
+      "  # take each letter and encode it\n" +
+      "  0.upto(txt.length-1) do |i|\n" +
+      "    # we want to encode the i-th letter\n" +
+      "    txt[i] = rot13_char(txt[i])\n" +
+      "  end\n" +
+      "  txt # returning the modified text\n" +
+      "end\n" +
+      "\n" +
+      "def rot13_char char\n" +
+      "  # this is just a placeholder\n" +
+      "  char.upcase\n" +
+      "end"
+
+    para "If you wrote the above code correctly it will make each ",
+      "letter uppercase. This isn't exactly what we want to do, ",
+      "so go to the next page."
+  end
+
+  page "Take Care of each Letter" do
+    para "Now we need to make the ", code("rot13_char"),
+      " method actually work. Here is a version that will work in most cases:"
+
+    embed_code "def rot13_char char\n" +
+      "  13.times do\n" +
+      '    if char == "z"' + "\n" +
+      '      # "z".next doesn\'t do what we want' + "\n" +
+      '      char = "a"' + "\n" +
+      '    elsif char == "Z"' + "\n" +
+      '      # neither does "Z".next' + "\n" +
+      '      char = "A"' + "\n" +
+      '    elsif char == " "' + "\n" +
+      "      # do nothing if char is a space\n" +
+      "    else\n" +
+      "      # if it is any other letter\n" +
+      "      # but not a space\n"
+      "      char = char.next\n" +
+      "    end\n" +
+      "  end\n" +
+      "  char\n" +
+      "end\n"
+
+    para "A few new things have been used here that beg for some explanation."
+
+    para code("if"), " and ", code("else"), " can be used to let the program ",
+      "make ", strong("decisions"), ". ", strong("If"), " you are trying to ",
+      "encode a space, do not bother ", strong("else"), " get something done.",
+      " Things like that. As you can see, when there are more than two cases ",
+      code("elsif"), " can be used. The code after ", code("else"),
+      " is executed only if all other conditions are false."
+
+    para "The ", strong("condition"), " is the piece of code after ",
+      code("if"), " (and after ", code("elsif"), "). It will be considered to ",
+      "be ", code("true"), " if it is anything but ", code("false"), " or ",
+      code("nil"), " (a special value meaning something like ",
+      em("nothing at all"), "). You can check in the Try Ruby console ",
+      "that expressions like ", code('"a" == "b"'), " will evaluate to ",
+      code("false"), "."
+
+    para "So now to ", code("=="), ". It is an operand that is used to check ",
+      "for equality. Note how it is different from ", code("="),
+      " used for assignment. ", code("a == b"), ' means "is a equal to b?", ',
+      "while by writing ", code("a = b"), ", you say something totally ",
+      'different: "make a equal to b!". I\'m stressing this because ',
+      "beginners often tend to confuse the two. Make sure you understand ",
+      "the difference!"
+  end
+
+  page "Shorter version" do
+
+    para "There is no real need for the empty ", code("elsif"), ". I put it",
+      " there just to be able to show an example use of ", code("else"),
+      ". It would make more sense to write the method as follows:"
+
+    embed_code "def rot13_char char\n" +
+      "  13.times do\n" +
+      '    if char == "z"' + "\n" +
+      '      # "z".next doesn\'t do what we want' + "\n" +
+      '      char = "a"' + "\n" +
+      '    elsif char == "Z"' + "\n" +
+      '      # neither does "Z".next' + "\n" +
+      '      char = "A"' + "\n" +
+      '    elsif char != " "' + "\n" +
+      "      # if it is any other letter\n" +
+      "      # but not a space\n" +
+      "      char = char.next\n" +
+      "    end\n" +
+      "  end\n" +
+      "  char\n" +
+      "end\n"
+
+    para "Here the ", code("!="), " operator has been used. Which means ",
+      strong("not equal to"), ". This operator will evaluate to true whenever ",
+      code("=="), " evaluates to false"
+  end
+
+  page "Exercises" do
+    para "I will leave a few more exercises for the brave:"
+
+    item "Try using the ", code("case"), " statement instead of ", code("if"),
+      "/", code("elsif"), "/", code("else"), ", use Google to find ",
+      "out how to use it."
+    item "The program we wrote will only work for alphabetic characters and ",
+      "spaces. Try to make it ignore any non alphabetic character. It will ",
+      "be useful to get to know more about ", strong("regular expressions"), "."
+    item "VFVAB IYCDH GSDBC WXRBN GGRLX WPAJC DUJCN HXDOX AHXDQ JENMN LRYQN ",
+      "ANMVH VNBBJ PNENA HFNUU MXWNG GVXAN WXRBN VFVAB IYCDH :)"
+  end
+
+
   lesson "The End"
 
   page "Game Over, Roll Credits" do
